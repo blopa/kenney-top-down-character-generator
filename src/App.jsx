@@ -5,6 +5,8 @@ import {
     TextField,
     Divider,
     Button,
+    InputLabel,
+    Select, MenuItem,
 } from '@mui/material';
 
 // Styles
@@ -56,17 +58,15 @@ function App() {
     const [canvasSize, setCanvasSize] = useState([null, null]);
     const [gridSize, setGridSize] = useState([null, null]);
     const [imageSize, setImageSize] = useState([null, null]);
-    const [order, setOrder] = useState('columns');
     const canvas = useRef(null);
     const [columns, rows] = gridSize;
-    const isColumns = order === 'columns';
 
     const spritesOrder = useMemo(() => {
         const result = [];
-        (new Array(isColumns ? columns : rows)).fill(null).forEach((v1, rc) => {
+        (new Array(columns)).fill(null).forEach((v1, rc) => {
             const cols = [];
-            (new Array(isColumns ? rows : columns)).fill(null).forEach((v2, cr) => {
-                cols.push(isColumns ? [-rc, -cr] : [-cr, -rc]);
+            (new Array(rows)).fill(null).forEach((v2, cr) => {
+                cols.push([-rc, -cr]);
             });
 
             result.push(...cols);
@@ -77,7 +77,7 @@ function App() {
         });
 
         return result;
-    }, [columns, rows, order, isColumns]);
+    }, [columns, rows]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -183,6 +183,35 @@ function App() {
     return (
         <Container className={styles.container} maxWidth="lg">
             <div>
+                {spritesCategories.map((category) => {
+                    const sprites = spritesObjects.filter((sprite) => sprite.category === category.name);
+                    return (
+                        <FormControl
+                            variant="outlined"
+                            sx={{ m: 1, minWidth: 120 }}
+                            size="small"
+                            key={category.name}
+                        >
+                            <InputLabel htmlFor="sprite-type-select">Sprite Type</InputLabel>
+                            <Select
+                                labelId="sprite-type-label"
+                                id="sprite-type-select"
+                                value={sprites[0].name}
+                                onChange={(e) => {
+                                    // TODO
+                                }}
+                                label="Sprite Type"
+                            >
+                                {sprites.map(({ name }) => (
+                                    <MenuItem key={name} value={name}>
+                                        {name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    );
+                })}
+                <Divider sx={{ marginTop: '10px', marginBottom: '10px' }} />
                 <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }}>
                     <div style={{ display: 'inline-flex' }}>
                         <TextField
@@ -238,7 +267,7 @@ function App() {
             </FormControl>
             <Divider sx={{ marginTop: '10px', marginBottom: '10px' }} />
             <div>
-                {(new Array(isColumns ? columns : rows)).fill(null).map((v, rc) => (
+                {(new Array(columns)).fill(null).map((v, rc) => (
                     <div style={{ marginLeft: `${spriteWidth * rc * scale}px` }}>
                         {spriteFiles.map(({ image, name, show }) => {
                             if (!show) {
@@ -258,8 +287,7 @@ function App() {
                                         width: `${spriteWidth}px`,
                                         height: `${spriteHeight}px`,
                                         transformOrigin: '0px 50%',
-                                        backgroundPosition:
-                                                        `${(isColumns ? -rc : x) * spriteWidth}px ${(!isColumns ? -rc : y) * spriteHeight}px`,
+                                        backgroundPosition: `${-rc * spriteWidth}px ${y * spriteHeight}px`,
                                         zoom: scale,
                                         position: 'absolute',
                                     }}
