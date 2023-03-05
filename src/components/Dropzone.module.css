@@ -1,0 +1,24 @@
+.dropzone {
+    border: 2px dashed #aaa;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.dropzone.active {
+    border-color: #6c6;
+}
+
+.dropzone.reject {
+    border-color: #c66;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+li {
+    margin-top: 5px;
+}
