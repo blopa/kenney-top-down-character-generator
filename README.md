@@ -1,4 +1,4 @@
-# Kenney Urgan Character Generator
+# Kenney Urban Character Generator
 Website to generate random characters using the [RPG Urban Pack](https://www.kenney.nl/assets/rpg-urban-pack) from Kenney.
 
 ## Try it out: https://blopa.github.io/kenney-top-down-character-generator/
