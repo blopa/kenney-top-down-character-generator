@@ -18,8 +18,8 @@ const directories = [...new Set(modulePaths.map((file) => file.split('/')[1]))];
 const categoryOrder = {
     skin: 1,
     eyes: 2,
-    'facial-hairs': 3,
-    torso: 4,
+    torso: 3,
+    'facial-hairs': 4,
     feet: 5,
     legs: 6,
     'hand-gear': 7,
@@ -41,7 +41,7 @@ const spritesObjects = modulePaths.map((modulePath) => {
     return {
         name: modulePath,
         image: base64Image,
-        show: true,
+        show: modulePath.includes('base-0'),
         category,
         order: categoryOrder[category] || Number.MAX_SAFE_INTEGER,
     };
@@ -165,6 +165,28 @@ function App() {
         }
     }, [canvasSize, height, spriteFiles, width, spriteWidth, spriteHeight]);
 
+    const handleSelectSprite = useCallback((category) => (e) => {
+        const newSprites = spriteFiles.map((sprite) => {
+            if (sprite.name === e.target.value) {
+                return {
+                    ...sprite,
+                    show: true,
+                };
+            }
+
+            if (sprite.category === category) {
+                return {
+                    ...sprite,
+                    show: false,
+                };
+            }
+
+            return sprite;
+        });
+
+        setSpriteFiles(newSprites);
+    }, [spriteFiles, setSpriteFiles]);
+
     useEffect(() => {
         const [width, height] = imageSize;
 
@@ -184,7 +206,7 @@ function App() {
         <Container className={styles.container} maxWidth="lg">
             <div>
                 {spritesCategories.map((category) => {
-                    const sprites = spritesObjects.filter((sprite) => sprite.category === category.name);
+                    const sprites = spriteFiles.filter((sprite) => sprite.category === category.name);
                     return (
                         <FormControl
                             variant="outlined"
@@ -192,16 +214,17 @@ function App() {
                             size="small"
                             key={category.name}
                         >
-                            <InputLabel htmlFor="sprite-type-select">Sprite Type</InputLabel>
+                            <InputLabel htmlFor="sprite-type-select">{category.name}</InputLabel>
                             <Select
                                 labelId="sprite-type-label"
                                 id="sprite-type-select"
-                                value={sprites[0].name}
-                                onChange={(e) => {
-                                    // TODO
-                                }}
-                                label="Sprite Type"
+                                value={sprites.find(({ show }) => show)?.name || ''}
+                                onChange={handleSelectSprite(category.name)}
+                                label={category.name}
                             >
+                                <MenuItem value="">
+                                    none
+                                </MenuItem>
                                 {sprites.map(({ name }) => (
                                     <MenuItem key={name} value={name}>
                                         {name}
